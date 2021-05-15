@@ -21,14 +21,14 @@ conexion.onerror = (error) => {
     console.log('Error', error)
 }
 
-const addData = (data) => {
+const agregar = (data) => {
     const transaction = db.transaction(['tareas'], 'readwrite')
     const objectStore = transaction.objectStore('tareas')
     const conexion = objectStore.add(data)
     readData()
 }
 
-const getData = (key) => {
+const obtener = (key) => {
     const transaction = db.transaction(['tareas'], 'readwrite')
     const objectStore = transaction.objectStore('tareas')
     const conexion = objectStore.get(key)
@@ -38,7 +38,7 @@ const getData = (key) => {
     }
 }
 
-const updateData = (data) => {
+const actualizar = (data) => {
     const transaction = db.transaction(['tareas'], 'readwrite')
     const objectStore = transaction.objectStore('tareas')
     const conexion = objectStore.put(data)
@@ -47,7 +47,7 @@ const updateData = (data) => {
     }
 }
 
-const deleteData = (key) => {
+const eliminar = (key) => {
     const transaction = db.transaction(['tareas'], 'readwrite')
     const objectStore = transaction.objectStore('tareas')
     const conexion = objectStore.delete(key)
@@ -56,7 +56,7 @@ const deleteData = (key) => {
     }
 }
 
-const readData = () => {
+const consultar = () => {
     const transaction = db.transaction(['tareas'], 'readonly')
     const objectStore = transaction.objectStore('tareas')
     const conexion = objectStore.openCursor()
