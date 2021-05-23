@@ -1,73 +1,78 @@
-const indexedDB = window.indexedDB
+const indexedDb = window.indexedDB;
 
 let db
-const conexion = indexedDB.open('listaTareas', 1)
 
-conexion.onsuccess = () => {
+const conexion = indexedDb.open('listaTareas',2)
+
+conexion.onsuccess = () =>{
     db = conexion.result
     console.log('Base de datos abierta', db)
-    readData()
 }
 
-conexion.onupgradeneeded = (e) => {
+conexion.onupgradeneeded = (e) =>{
     db = e.target.result
     console.log('Base de datos creada', db)
-    const objectStore = db.createObjectStore('tareas', {
+    const coleccionObjetos = db.createObjectStore('tareas',{
         keyPath: 'clave'
     })
 }
 
-conexion.onerror = (error) => {
-    console.log('Error', error)
+conexion.onerror = (error) =>{
+    console.log('Error ', error)
 }
 
-const agregar = (data) => {
-    const transaction = db.transaction(['tareas'], 'readwrite')
-    const objectStore = transaction.objectStore('tareas')
-    const conexion = objectStore.add(data)
-    readData()
+const agregar = (info) => {
+    const trasaccion = db.transaction(['tareas'],'readwrite')
+    const coleccionObjetos = trasaccion.objectStore('tareas')
+    const conexion = coleccionObjetos.add(data)
+    consultar()
 }
 
-const obtener = (key) => {
-    const transaction = db.transaction(['tareas'], 'readwrite')
-    const objectStore = transaction.objectStore('tareas')
-    const conexion = objectStore.get(key)
+const obtener = (clave) =>{
+    const trasaccion = db.transaction(['tareas'],'readonly')
+    const coleccionObjetos = trasaccion.objectStore('tareas')
+    const conexion = coleccionObjetos.get(clave)
 
-    conexion.onsuccess = (e) => {
-        console.log(conexion.result);
+    conexion.onsuccess = (e) =>{
+        console.log(conexion.result)
+    }
+    
+}
+
+const actualizar = (data) =>{    
+    const trasaccion = db.transaction(['tareas'],'readwrite')
+    const coleccionObjetos = trasaccion.objectStore('tareas')
+    const conexion = coleccionObjetos.put(data)
+    
+    conexion.onsuccess = () =>{
+        consultar()
     }
 }
 
-const actualizar = (data) => {
-    const transaction = db.transaction(['tareas'], 'readwrite')
-    const objectStore = transaction.objectStore('tareas')
-    const conexion = objectStore.put(data)
-    conexion.onsuccess = () => {
-        readData()
+const eliminar = (clave) =>{      
+    const trasaccion = db.transaction(['tareas'],'readwrite')
+    const coleccionObjetos = trasaccion.objectStore('tareas')
+    const conexion = coleccionObjetos.delete(clave)
+
+    conexion.onsuccess = () =>{
+        consultar()
     }
 }
 
-const eliminar = (key) => {
-    const transaction = db.transaction(['tareas'], 'readwrite')
-    const objectStore = transaction.objectStore('tareas')
-    const conexion = objectStore.delete(key)
-    conexion.onsuccess = () => {
-        readData()
-    }
-}
+const consultar = () =>{
+    const trasaccion = db.transaction(['tareas'],'readonly')
+    const coleccionObjetos = trasaccion.objectStore('tareas')
+    const conexion = coleccionObjetos.openCursor()
 
-const consultar = () => {
-    const transaction = db.transaction(['tareas'], 'readonly')
-    const objectStore = transaction.objectStore('tareas')
-    const conexion = objectStore.openCursor()
-
-    conexion.onsuccess = (e) => {
-        const cursor = e.target.result
-        if (cursor) {
-            console.log('Lista de tareas');
-            console.log(cursor.value);
+    console.log('Lista de tareas')
+    
+    conexion.onsuccess = (e) =>{
+        const cursor = e.target.result        
+        if(cursor){
+            console.log(cursor.value)
+            cursor.continue()
         }else{
-            console.log('No hay tareas en la lista');
+            console.log('No hay tareas en la lista')
         }
     }
 }
